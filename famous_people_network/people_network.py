@@ -160,3 +160,7 @@ class PeopleNetwork:
                     sidebars[titles[i + j]] = page["revisions"][0]["slots"]["main"]["*"]
 
         return sidebars
+
+a = PeopleNetwork()
+a.add_person("Aristotle", 3)
+a.add_person("Aristotle", 1)
