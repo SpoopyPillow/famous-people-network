@@ -58,18 +58,20 @@ class PeopleNetwork:
             titles = [titles]
 
         # TODO More checks for person
-        sidebars = self._get_sidebars(titles)
+        all_sidebars = self._get_sidebars(titles)
         regexp = re.compile(r"\| birth_date")
         people = []
 
         for title in titles:
             if (
                 title in self.adjacency_list
-                or title in sidebars
-                and regexp.search(sidebars[title]) is not None
+                or title in all_sidebars
+                and regexp.search(all_sidebars[title]) is not None
             ):
-                # TODO implement lazy loading
                 people.append(title)
+                self.sidebars[title] = all_sidebars[title]
+            else:
+                self.visited_pages.add(title)
 
         return people
 
