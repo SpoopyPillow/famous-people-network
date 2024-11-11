@@ -1,13 +1,14 @@
 from collections import defaultdict
 import re
 import requests
+import networkx as nx
 
 
 class PeopleNetwork:
     url = "https://en.wikipedia.org/w/api.php"
 
     def __init__(self):
-        self.adjacency_list = defaultdict(set)
+        self.graph = nx.MultiDiGraph()
         self.sidebars = {}
         self.visited_pages = set()
 
@@ -25,7 +26,7 @@ class PeopleNetwork:
         return pages
 
     def add_person(self, title, depth=0):
-        self.adjacency_list[title]
+        self.graph.add_node(title)
         is_connected = set()
 
         people = [title]
@@ -41,11 +42,9 @@ class PeopleNetwork:
                     neighbors = self._get_sidebar_links(sidebars[person])
                     people_neighbors = self._get_people(neighbors)
 
-                    self.adjacency_list[person].update(people_neighbors)
-                    for person_neighbor in people_neighbors:
-                        self.adjacency_list[person_neighbor].add(person)
+                    self.graph.add_edges_from([(person, neighbor) for neighbor in people_neighbors])
                 else:
-                    people_neighbors = self.adjacency_list[person]
+                    people_neighbors = self.graph.neighbors(person)
 
                 new_people.extend(people_neighbors)
                 is_connected.add(person)
@@ -64,7 +63,7 @@ class PeopleNetwork:
 
         for title in titles:
             if (
-                title in self.adjacency_list
+                self.graph.has_node(title)
                 or title in all_sidebars
                 and regexp.search(all_sidebars[title]) is not None
             ):
