@@ -75,7 +75,7 @@ class PeopleNetwork:
         return people
 
     def _get_sidebar_links(self, sidebar):
-        return re.findall(r"\[\[.*?(.*?)[\|\]]", sidebar)
+        return list(set(re.findall(r"\[\[.*?(.*?)[\|\]]", sidebar)))
 
     def _get_sidebars(self, titles):
         if not isinstance(titles, list):
@@ -116,13 +116,13 @@ class PeopleNetwork:
         data = session.get(url=self.url, params=params).json()
         pages = data["query"]["pages"]
 
-        links = []
+        links = set()
 
         for val in pages.values():
             if "links" not in val:
                 return []
             for link in val["links"]:
-                links.append(link["title"])
+                links.add(link["title"])
 
         while "continue" in data:
             plcontinue = data["continue"]["plcontinue"]
@@ -133,7 +133,7 @@ class PeopleNetwork:
 
             for val in pages.values():
                 for link in val["links"]:
-                    links.append(link["title"])
+                    links.add(link["title"])
 
         return links
 
