@@ -32,17 +32,25 @@ class PeopleNetwork:
         people = [title]
         for level in range(depth):
             new_people = []
-            sidebars = self._get_sidebars(people)
+            sidebars = self._extract_sidebars(people)
 
             for person in people:
                 if person in is_connected or person not in sidebars:
                     continue
 
                 if person not in self.visited_pages:
-                    neighbors = self._get_sidebar_links(sidebars[person])
-                    people_neighbors = self._get_people(neighbors)
+                    neighbors = self._extract_sidebar_links(sidebars[person])
+                    people_neighbors = self._extract_people(neighbors)
 
-                    self.graph.add_edges_from([(person, neighbor) for neighbor in people_neighbors])
+                    self.graph.add_edges_from(
+                        [
+                            (
+                                person.encode("ascii", errors="ignore").decode(),
+                                neighbor.encode("ascii", errors="ignore").decode(),
+                            )
+                            for neighbor in people_neighbors
+                        ]
+                    )
                 else:
                     people_neighbors = self.graph.neighbors(person)
 
@@ -52,12 +60,12 @@ class PeopleNetwork:
             self.visited_pages.update(people)
             people = new_people
 
-    def _get_people(self, titles):
+    def _extract_people(self, titles):
         if not isinstance(titles, list):
             titles = [titles]
 
         # TODO More checks for person
-        all_sidebars = self._get_sidebars(titles)
+        all_sidebars = self._extract_sidebars(titles)
         regexp = re.compile(r"\| birth_date")
         people = []
 
@@ -74,10 +82,10 @@ class PeopleNetwork:
 
         return people
 
-    def _get_sidebar_links(self, sidebar):
+    def _extract_sidebar_links(self, sidebar):
         return list(set(re.findall(r"\[\[.*?(.*?)[\|\]]", sidebar)))
 
-    def _get_sidebars(self, titles):
+    def _extract_sidebars(self, titles):
         if not isinstance(titles, list):
             titles = [titles]
 
@@ -103,7 +111,7 @@ class PeopleNetwork:
 
         return sidebars
 
-    def _get_links(self, title):
+    def _extract_links(self, title):
         session = requests.Session()
         params = {
             "action": "query",
@@ -137,7 +145,7 @@ class PeopleNetwork:
 
         return links
 
-    def _get_categories(self, titles):
+    def _extract_categories(self, titles):
         if not isinstance(titles, list):
             titles = [titles]
 
@@ -159,3 +167,13 @@ class PeopleNetwork:
                     sidebars[titles[i + j]] = page["revisions"][0]["slots"]["main"]["*"]
 
         return sidebars
+
+    def to_ctyoscape(self):
+        pos = nx.nx_pydot.graphviz_layout(self.graph, prog="neato")
+        cytoscape_json = nx.cytoscape_data(self.graph)
+        for node in cytoscape_json["elements"]["nodes"]:
+            name = node["data"].pop("name")
+            node["data"]["label"] = name
+            node["position"] = {"x": pos[name][0] * 5, "y": pos[name][1] * 5}
+
+        return cytoscape_json

@@ -2,30 +2,37 @@ import sys, os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-from dash import Dash, dcc, html, Input, Output, callback
-import networkx as nx
+from dash import Dash, dcc, html, Input, Output, State, callback
 import dash_cytoscape as cyto
 from famous_people_network.people_network import PeopleNetwork
 
 app = Dash(__name__)
 
 people_network = PeopleNetwork()
-people_network.add_person("Aristotle", 3)
-
-pos = nx.nx_pydot.graphviz_layout(people_network.graph, prog="neato")
-cytoscape_json = nx.cytoscape_data(people_network.graph)
-for node in cytoscape_json["elements"]["nodes"]:
-    name = node["data"].pop("name")
-    node["data"]["label"] = name
-    node["position"] = {"x": pos[name][0] * 5, "y": pos[name][1] * 5}
 
 app.layout = html.Div(
-    [
+    children=[
+        html.Div(
+            [
+                html.Div(
+                    [
+                        "Person Name: ",
+                        dcc.Input(id="input-person", value="", type="text"),
+                    ]
+                ),
+                html.Div(
+                    [
+                        "Depth: ",
+                        dcc.Slider(id="slider-depth", min=0, max=5, step=1, value=0),
+                    ]
+                ),
+                html.Button(id="submit-button-state", children="Submit"),
+            ]
+        ),
         cyto.Cytoscape(
             id="people-network",
             layout={"name": "preset", "directed": True},
-            style={"width": "100%", "height": "400px"},
-            elements=cytoscape_json["elements"],
+            style={"width": "100%", "height": "600px"},
             stylesheet=[
                 {"selector": "node", "style": {"label": "data(id)"}},
                 {
@@ -37,9 +44,21 @@ app.layout = html.Div(
                     },
                 },
             ],
-        )
+        ),
     ]
 )
+
+@callback(
+    Output("people-network", "elements"),
+    Input("submit-button-state", "n_clicks"),
+    State("input-person", "value"),
+    State("slider-depth", "value"),
+)
+def add_person(n_clicks, person_name, depth):
+    if n_clicks is None:
+        return []
+    people_network.add_person(person_name, depth)
+    return people_network.to_ctyoscape()["elements"]
 
 if __name__ == "__main__":
     app.run(debug=True)
