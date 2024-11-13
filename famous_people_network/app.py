@@ -60,6 +60,7 @@ app.layout = html.Div(
     Input("submit-button-state", "n_clicks"),
     State("input-person", "value"),
     State("slider-depth", "value"),
+    running=[(Output("submit-button-state", "disabled"), True, False)]
 )
 def add_person(n_clicks, person_name, depth):
     if n_clicks is None:
