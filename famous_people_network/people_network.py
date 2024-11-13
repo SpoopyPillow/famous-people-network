@@ -35,18 +35,22 @@ class PeopleNetwork:
             sidebars = self._extract_sidebars(people)
 
             for person in people:
+                # person = person.encode("ascii", errors="ignore").decode()
                 if person in is_connected or person not in sidebars:
                     continue
 
                 if person not in self.visited_pages:
                     neighbors = self._extract_sidebar_links(sidebars[person])
+                    # neighbors = list(
+                    #     map(lambda x: x.encode("ascii", errors="ignore").decode(), neighbors)
+                    # )
                     people_neighbors = self._extract_people(neighbors)
 
                     self.graph.add_edges_from(
                         [
                             (
-                                person.encode("ascii", errors="ignore").decode(),
-                                neighbor.encode("ascii", errors="ignore").decode(),
+                                person,
+                                neighbor,
                             )
                             for neighbor in people_neighbors
                         ]
@@ -169,11 +173,14 @@ class PeopleNetwork:
         return sidebars
 
     def to_ctyoscape(self):
-        pos = nx.nx_pydot.graphviz_layout(self.graph, prog="neato")
-        cytoscape_json = nx.cytoscape_data(self.graph)
+        label_fix = nx.relabel_nodes(
+            self.graph, lambda x: x.encode("ascii", errors="ignore").decode()
+        )
+        pos = nx.nx_pydot.graphviz_layout(label_fix, prog="sfdp")
+        cytoscape_json = nx.cytoscape_data(label_fix)
         for node in cytoscape_json["elements"]["nodes"]:
             name = node["data"].pop("name")
             node["data"]["label"] = name
-            node["position"] = {"x": pos[name][0] * 5, "y": pos[name][1] * 5}
+            node["position"] = {"x": pos[name][0] * 3, "y": pos[name][1] * 3}
 
         return cytoscape_json
