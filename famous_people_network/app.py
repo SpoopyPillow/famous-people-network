@@ -3,6 +3,7 @@ import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from dash import Dash, dcc, html, Input, Output, State, callback
+from dash.exceptions import PreventUpdate
 import dash_cytoscape as cyto
 from famous_people_network.people_network import PeopleNetwork
 
@@ -26,7 +27,7 @@ app.layout = html.Div(
                         dcc.Slider(id="slider-depth", min=0, max=5, step=1, value=0),
                     ]
                 ),
-                html.Button(id="submit-button-state", children="Submit"),
+                html.Button(id="submit-button-state", disabled=False, children="Submit"),
             ]
         ),
         cyto.Cytoscape(
@@ -48,6 +49,7 @@ app.layout = html.Div(
     ]
 )
 
+
 @callback(
     Output("people-network", "elements"),
     Input("submit-button-state", "n_clicks"),
@@ -56,9 +58,10 @@ app.layout = html.Div(
 )
 def add_person(n_clicks, person_name, depth):
     if n_clicks is None:
-        return []
+        raise PreventUpdate
     people_network.add_person(person_name, depth)
     return people_network.to_ctyoscape()["elements"]
+
 
 if __name__ == "__main__":
     app.run(debug=True)

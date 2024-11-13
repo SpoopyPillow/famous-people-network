@@ -27,6 +27,7 @@ class PeopleNetwork:
 
     def add_person(self, title, depth=0):
         self.graph.add_node(title)
+        self.sidebars[title] = self._extract_sidebars(title)[title]
         is_connected = set()
 
         people = [title]
@@ -35,15 +36,11 @@ class PeopleNetwork:
             sidebars = self._extract_sidebars(people)
 
             for person in people:
-                # person = person.encode("ascii", errors="ignore").decode()
                 if person in is_connected or person not in sidebars:
                     continue
 
                 if person not in self.visited_pages:
                     neighbors = self._extract_sidebar_links(sidebars[person])
-                    # neighbors = list(
-                    #     map(lambda x: x.encode("ascii", errors="ignore").decode(), neighbors)
-                    # )
                     people_neighbors = self._extract_people(neighbors)
 
                     self.graph.add_edges_from(
@@ -92,10 +89,17 @@ class PeopleNetwork:
     def _extract_sidebars(self, titles):
         if not isinstance(titles, list):
             titles = [titles]
-
         sidebars = {}
         step = 50
-        # TODO check if already visited
+
+        unvisited = []
+        for title in titles:
+            if title in self.sidebars:
+                sidebars[title] = self.sidebars[title]
+            elif title not in self.visited_pages:
+                unvisited.append(title)
+        titles = unvisited
+
         for i in range(0, len(titles), step):
             params = {
                 "action": "query",
