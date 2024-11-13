@@ -35,12 +35,17 @@ app.layout = html.Div(
             layout={"name": "preset", "directed": True},
             style={"width": "100%", "height": "600px"},
             stylesheet=[
-                {"selector": "node", "style": {"label": "data(id)"}},
+                {
+                    "selector": "node",
+                    "style": {
+                        "label": "data(name)",
+                    },
+                },
                 {
                     "selector": "edge",
                     "style": {
                         # The default curve style does not work with certain arrows
-                        "curve-style": "bezier",
+                        "curve-style": "straight",
                         "target-arrow-shape": "triangle",
                     },
                 },

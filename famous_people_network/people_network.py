@@ -2,13 +2,14 @@ from collections import defaultdict
 import re
 import requests
 import networkx as nx
+import json
 
 
 class PeopleNetwork:
     url = "https://en.wikipedia.org/w/api.php"
 
     def __init__(self):
-        self.graph = nx.MultiDiGraph()
+        self.graph = nx.DiGraph()
         self.sidebars = {}
         self.visited_pages = set()
 
@@ -43,15 +44,14 @@ class PeopleNetwork:
                     neighbors = self._extract_sidebar_links(sidebars[person])
                     people_neighbors = self._extract_people(neighbors)
 
-                    self.graph.add_edges_from(
-                        [
-                            (
-                                person,
-                                neighbor,
-                            )
-                            for neighbor in people_neighbors
-                        ]
-                    )
+                    for neighbor in people_neighbors:
+                        self.graph.add_edge(
+                            person,
+                            neighbor,
+                            labels=json.dumps(
+                                self._extract_sidebar_links_category(sidebars[person], neighbor)
+                            ),
+                        )
                 else:
                     people_neighbors = self.graph.neighbors(person)
 
@@ -85,6 +85,9 @@ class PeopleNetwork:
 
     def _extract_sidebar_links(self, sidebar):
         return list(set(re.findall(r"\[\[.*?(.*?)[\|\]]", sidebar)))
+
+    def _extract_sidebar_links_category(self, sidebar, link):
+        return re.findall(r"\n\s*\|\s*(.*?)\s*=.*?\[\[" + link + r"\]\]", sidebar)
 
     def _extract_sidebars(self, titles):
         if not isinstance(titles, list):
@@ -183,8 +186,7 @@ class PeopleNetwork:
         pos = nx.nx_pydot.graphviz_layout(label_fix, prog="sfdp")
         cytoscape_json = nx.cytoscape_data(label_fix)
         for node in cytoscape_json["elements"]["nodes"]:
-            name = node["data"].pop("name")
-            node["data"]["label"] = name
+            name = node["data"]["name"]
             node["position"] = {"x": pos[name][0] * 3, "y": pos[name][1] * 3}
 
         return cytoscape_json
