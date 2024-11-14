@@ -2,7 +2,6 @@ import sys, os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-from famous_people_network.page import Page
 from famous_people_network.wiki import Wiki
 from collections import defaultdict
 import re
@@ -18,8 +17,11 @@ class PeopleNetwork:
 
     def add_person(self, title, depth=0):
         self.graph.add_node(title)
+        if not self.wiki.extract_people(title):
+            return
+        
         is_connected = set()
-
+        # TODO Use deque
         people = [title]
         for level in range(depth):
             new_people = []
