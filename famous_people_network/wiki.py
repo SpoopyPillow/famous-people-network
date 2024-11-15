@@ -1,9 +1,10 @@
-import sys, os
+import requests
+import sys
+import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from famous_people_network.page import Page
-import requests
 
 
 class Wiki:
@@ -95,7 +96,7 @@ class Wiki:
                     sidebars[title] = page["revisions"][0]["slots"]["main"]["*"]
 
         return sidebars
-    
+
     def _extract_summaries(self, titles):
         if not isinstance(titles, list):
             titles = [titles]

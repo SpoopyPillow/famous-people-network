@@ -1,11 +1,13 @@
-import sys, os
+from dash import Dash, dcc, html, Input, Output, State, callback
+from dash.exceptions import PreventUpdate
+import dash_cytoscape as cyto
+import sys
+import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from famous_people_network.people_network import PeopleNetwork
-from dash import Dash, dcc, html, Input, Output, State, callback
-from dash.exceptions import PreventUpdate
-import dash_cytoscape as cyto
+
 
 app = Dash(__name__)
 
@@ -60,7 +62,7 @@ app.layout = html.Div(
     Input("submit-button-state", "n_clicks"),
     State("input-person", "value"),
     State("slider-depth", "value"),
-    running=[(Output("submit-button-state", "disabled"), True, False)]
+    running=[(Output("submit-button-state", "disabled"), True, False)],
 )
 def add_person(n_clicks, person_name, depth):
     if n_clicks is None:

@@ -1,10 +1,11 @@
-import sys, os
+import networkx as nx
+import json
+import sys
+import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from famous_people_network.wiki import Wiki
-import networkx as nx
-import json
 
 
 class PeopleNetwork:
