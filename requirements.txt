@@ -12,6 +12,7 @@ cycler==0.12.1
 dash==2.18.2
 dash-core-components==2.0.0
 dash-html-components==2.0.0
+dash-resizable-panels==0.1.0
 dash-table==5.0.0
 dash_cytoscape==1.0.2
 debugpy==1.8.8
