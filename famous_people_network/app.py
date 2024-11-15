@@ -3,6 +3,7 @@ import os
 from dash import Dash, dcc, html, Input, Output, State, callback
 from dash.exceptions import PreventUpdate
 import dash_cytoscape as cyto
+from dash_resizable_panels import PanelGroup, Panel, PanelResizeHandle
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
@@ -15,11 +16,12 @@ people_network = PeopleNetwork()
 
 app.layout = html.Div(
     [
-        html.Div(
-            style={"padding": 10, "display": "flex", "flexDirection": "row"},
+        PanelGroup(
+            id="panel-group",
             children=[
-                html.Div(
-                    style={"flex": 1},
+                Panel(
+                    id="panel-1",
+                    style={},
                     children=[
                         html.H1("Famous People Network"),
                         html.Div(
@@ -38,30 +40,41 @@ app.layout = html.Div(
                         html.Div(id="graph-info"),
                     ],
                 ),
-                cyto.Cytoscape(
-                    id="people-network",
-                    layout={"name": "preset", "directed": True},
-                    style={"height": "770px", "flex": 3, "border": "1px solid black"},
-                    stylesheet=[
-                        {
-                            "selector": "node",
-                            "style": {
-                                "label": "data(name)",
-                            },
-                        },
-                        {
-                            "selector": "edge",
-                            "style": {
-                                # The default curve style does not work with certain arrows
-                                "curve-style": "straight",
-                                "target-arrow-shape": "triangle",
-                            },
-                        },
+                PanelResizeHandle(
+                    html.Div(style={"backgroundColor": "grey", "height": "100%", "width": "5px"})
+                ),
+                Panel(
+                    id="panel-2",
+                    style={},
+                    children=[
+                        cyto.Cytoscape(
+                            id="people-network",
+                            layout={"name": "preset", "directed": True},
+                            style={"height": "100%"},
+                            stylesheet=[
+                                {
+                                    "selector": "node",
+                                    "style": {
+                                        "label": "data(name)",
+                                    },
+                                },
+                                {
+                                    "selector": "edge",
+                                    "style": {
+                                        # The default curve style does not work with certain arrows
+                                        "curve-style": "straight",
+                                        "target-arrow-shape": "triangle",
+                                    },
+                                },
+                            ],
+                        ),
                     ],
                 ),
             ],
+            direction="horizontal",
         )
-    ]
+    ],
+    style={"height": "100vh"},
 )
 
 
