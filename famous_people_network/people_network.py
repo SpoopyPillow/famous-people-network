@@ -15,7 +15,7 @@ class PeopleNetwork:
 
     def add_person(self, title, depth=0):
         if not self.wiki.extract_people(title):
-            return
+            return False
         self.graph.add_node(title)
 
         is_connected = set()
@@ -40,6 +40,27 @@ class PeopleNetwork:
                 people.extend(people_neighbors)
                 is_connected.add(person)
 
+        return True
+
+    def remove_person(self, title, depth=0):
+        if not self.graph.has_node(person):
+            return False
+        people = self.graph.neighbors(title)
+        self.graph.remove_node(title)
+
+        for level in range(depth):
+            new_people = []
+            for person in people:
+                if not self.graph.has_node(person):
+                    continue
+                neighbors = self.graph.neighbors(person)
+                self.graph.remove_node(person)
+                new_people.extend(neighbors)
+
+            people = new_people
+
+        return True
+
     def to_ctyoscape(self):
         label_fix = nx.relabel_nodes(
             self.graph, lambda x: x.encode("ascii", errors="ignore").decode()
@@ -51,3 +72,6 @@ class PeopleNetwork:
             node["position"] = {"x": pos[name][0] * 3, "y": pos[name][1] * 3}
 
         return cytoscape_json
+
+    def get_page(self, title):
+        return self.wiki.people_pages[title]
