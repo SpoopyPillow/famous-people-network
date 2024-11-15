@@ -29,7 +29,7 @@ app.layout = html.Div(
                         dcc.Slider(id="slider-depth", min=0, max=5, step=1, value=0),
                     ]
                 ),
-                html.Button(id="submit-button-state", disabled=False, children="Submit"),
+                html.Button(id="button-submit-state", disabled=False, children="Submit"),
             ]
         ),
         cyto.Cytoscape(
@@ -53,22 +53,31 @@ app.layout = html.Div(
                 },
             ],
         ),
+        html.Div(id="graph-info"),
     ]
 )
 
 
 @callback(
     Output("people-network", "elements"),
-    Input("submit-button-state", "n_clicks"),
+    Input("button-submit-state", "n_clicks"),
     State("input-person", "value"),
     State("slider-depth", "value"),
-    running=[(Output("submit-button-state", "disabled"), True, False)],
+    running=[(Output("button-submit-state", "disabled"), True, False)],
 )
 def add_person(n_clicks, person_name, depth):
     if n_clicks is None:
         raise PreventUpdate
     people_network.add_person(person_name, depth)
     return people_network.to_ctyoscape()["elements"]
+
+
+@callback(Output("graph-info", "children"), Input("people-network", "tapNodeData"))
+def display_node_page(data):
+    if data is None:
+        raise PreventUpdate
+    page = people_network.get_page(data["id"])
+    return page.summary
 
 
 if __name__ == "__main__":
