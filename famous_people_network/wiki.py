@@ -1,6 +1,6 @@
-import requests
 import sys
 import os
+import requests
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
@@ -73,7 +73,7 @@ class Wiki:
     def _extract_sidebars(self, titles):
         if not isinstance(titles, list):
             titles = [titles]
-
+        session = requests.Session()
         sidebars = {}
         step = 50
 
@@ -84,10 +84,11 @@ class Wiki:
                 "format": "json",
                 "rvprop": "content",
                 "rvslots": "main",
-                "titles": "|".join(titles[i : i + step]),
                 "rvsection": 0,
+                "redirects": 1,
+                "titles": "|".join(titles[i : i + step]),
             }
-            data = requests.get(self.url, params=params).json()
+            data = session.get(self.url, params=params).json()
             pages = data["query"]["pages"]
 
             for page in pages.values():
@@ -95,12 +96,24 @@ class Wiki:
                     title = page["title"]
                     sidebars[title] = page["revisions"][0]["slots"]["main"]["*"]
 
+            while "continue" in data:
+                rvcontinue = data["continue"]["rvcontinue"]
+                params["rvcontinue"] = rvcontinue
+
+                data = session.get(url=self.url, params=params).json()
+                pages = data["query"]["pages"]
+
+                for page in pages.values():
+                    if "revisions" in page:
+                        title = page["title"]
+                        sidebars[title] = page["revisions"][0]["slots"]["main"]["*"]
+
         return sidebars
 
     def _extract_summaries(self, titles):
         if not isinstance(titles, list):
             titles = [titles]
-
+        session = requests.Session()
         summaries = {}
         step = 50
 
@@ -112,15 +125,28 @@ class Wiki:
                 "exintro": 0,
                 "exsentences": 2,
                 "explaintext": 0,
+                "redirects": 1,
                 "titles": "|".join(titles[i : i + step]),
             }
-            data = requests.get(self.url, params=params).json()
+            data = session.get(self.url, params=params).json()
             pages = data["query"]["pages"]
 
             for page in pages.values():
                 if "extract" in page:
                     title = page["title"]
                     summaries[title] = page["extract"]
+
+            while "continue" in data:
+                excontinue = data["continue"]["excontinue"]
+                params["excontinue"] = excontinue
+
+                data = session.get(url=self.url, params=params).json()
+                pages = data["query"]["pages"]
+
+                for page in pages.values():
+                    if "extract" in page:
+                        title = page["title"]
+                        summaries[title] = page["extract"]
 
         return summaries
 

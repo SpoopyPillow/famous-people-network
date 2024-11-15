@@ -1,8 +1,8 @@
+import sys
+import os
 from dash import Dash, dcc, html, Input, Output, State, callback
 from dash.exceptions import PreventUpdate
 import dash_cytoscape as cyto
-import sys
-import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
