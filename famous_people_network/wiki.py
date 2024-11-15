@@ -57,10 +57,11 @@ class Wiki:
         titles = unvisited
 
         sidebars = self._extract_sidebars(titles)
-        # TODO add summary
+        summaries = self._extract_summaries(titles)
         for title in titles:
             sidebar = sidebars[title] if title in sidebars else ""
-            page = Page(title=title, sidebar=sidebar)
+            summary = summaries[title] if title in summaries else ""
+            page = Page(title=title, sidebar=sidebar, summary=summary)
 
             pages[title] = page
             self.visited_titles.add(title)
@@ -94,6 +95,32 @@ class Wiki:
                     sidebars[title] = page["revisions"][0]["slots"]["main"]["*"]
 
         return sidebars
+    
+    def _extract_summaries(self, titles):
+        if not isinstance(titles, list):
+            titles = [titles]
+
+        summaries = {}
+        step = 50
+
+        for i in range(0, len(titles), step):
+            params = {
+                "action": "query",
+                "prop": "extracts",
+                "format": "json",
+                "exintro": 0,
+                "explaintext": 0,
+                "titles": "|".join(titles[i : i + step]),
+            }
+            data = requests.get(self.url, params=params).json()
+            pages = data["query"]["pages"]
+
+            for page in pages.values():
+                if "extract" in page:
+                    title = page["title"]
+                    summaries[title] = page["extract"]
+
+        return summaries
 
     def _extract_links(self, title):
         session = requests.Session()

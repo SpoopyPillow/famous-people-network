@@ -8,7 +8,6 @@ class Page:
     def __init__(self, title="", sidebar="", summary=""):
         self.title = title
         self.sidebar = sidebar
-        self.sidebar_links = set()
         self.summary = summary
         
     def __hash__(self):
