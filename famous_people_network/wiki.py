@@ -31,43 +31,49 @@ class Wiki:
         if not isinstance(titles, list):
             titles = [titles]
 
-        # TODO More checks for person
-        all_pages = self.extract_pages(titles)
-        people = []
+        self.extract_pages(titles)
+        people = [title for title in titles if title in self.people_pages]
 
         for title in titles:
-            if all_pages[title].is_person():
+            if title in self.people_pages:
                 people.append(title)
-                self.people_pages[title] = all_pages[title]
 
         return people
 
+    # Visited pages that are not people are not included
     def extract_pages(self, titles):
         if not isinstance(titles, list):
             titles = [titles]
 
         pages = {}
+        unvisited = []
+
+        for title in titles:
+            if title in self.people_pages:
+                pages[title] = self.people_pages[title]
+            elif title not in self.visited_titles:
+                unvisited.append(title)
+
+        titles = unvisited
+
         sidebars = self._extract_sidebars(titles)
+        # TODO add summary
         for title in titles:
             sidebar = sidebars[title] if title in sidebars else ""
-            pages[title] = Page(title=title, sidebar=sidebar)
+            page = Page(title=title, sidebar=sidebar)
 
+            pages[title] = page
             self.visited_titles.add(title)
+            if page.is_person():
+                self.people_pages[title] = page
         return pages
 
     def _extract_sidebars(self, titles):
         if not isinstance(titles, list):
             titles = [titles]
+
         sidebars = {}
         step = 50
-
-        unvisited = []
-        for title in titles:
-            if title in self.people_pages:
-                sidebars[title] = self.people_pages[title].sidebar
-            elif title not in self.visited_titles:
-                unvisited.append(title)
-        titles = unvisited
 
         for i in range(0, len(titles), step):
             params = {

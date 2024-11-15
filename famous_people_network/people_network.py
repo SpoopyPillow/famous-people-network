@@ -16,10 +16,10 @@ class PeopleNetwork:
         self.wiki = Wiki()
 
     def add_person(self, title, depth=0):
-        self.graph.add_node(title)
         if not self.wiki.extract_people(title):
             return
-        
+        self.graph.add_node(title)
+
         is_connected = set()
         # TODO Use deque
         people = [title]
@@ -27,18 +27,18 @@ class PeopleNetwork:
             new_people = []
             pages = self.wiki.extract_pages(people)
 
-            for person in people:
-                if person in is_connected or person not in pages:
+            for person, page in pages.items():
+                if person in is_connected:
                     continue
 
-                neighbors = pages[person].extract_sidebar_links()
+                neighbors = page.extract_sidebar_links()
                 people_neighbors = self.wiki.extract_people(neighbors)
 
                 for neighbor in people_neighbors:
                     self.graph.add_edge(
                         person,
                         neighbor,
-                        labels=json.dumps(pages[person].extract_sidebar_link_categories(neighbor)),
+                        labels=json.dumps(page.extract_sidebar_link_info(neighbor)),
                     )
 
                 new_people.extend(people_neighbors)

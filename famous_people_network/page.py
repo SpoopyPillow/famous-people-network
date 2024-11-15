@@ -17,8 +17,9 @@ class Page:
     def extract_sidebar_links(self):
         return list(set(re.findall(r"\[\[.*?(.*?)[\|\]]", self.sidebar)))
     
-    def extract_sidebar_link_categories(self, link):
+    def extract_sidebar_link_info(self, link):
         return re.findall(r"\n\s*\|\s*(.*?)\s*=.*?\[\[" + link + r"\]\]", self.sidebar)
     
     def is_person(self):
+        # TODO More checks for person
         return re.search(r"\| birth_date", self.sidebar) is not None
