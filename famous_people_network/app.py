@@ -14,6 +14,7 @@ app = Dash(__name__)
 
 people_network = PeopleNetwork()
 
+# TODO refresh button
 app.layout = html.Div(
     [
         PanelGroup(
@@ -21,7 +22,7 @@ app.layout = html.Div(
             children=[
                 Panel(
                     id="panel-1",
-                    style={},
+                    style={"padding": 10, "margin": 10},
                     children=[
                         html.H1("Famous People Network"),
                         html.Div(
@@ -45,7 +46,7 @@ app.layout = html.Div(
                 ),
                 Panel(
                     id="panel-2",
-                    style={},
+                    style={"padding": 10, "margin": 10},
                     children=[
                         cyto.Cytoscape(
                             id="people-network",
@@ -56,12 +57,13 @@ app.layout = html.Div(
                                     "selector": "node",
                                     "style": {
                                         "label": "data(name)",
+                                        "color": "white",
+                                        "background-color": "white"
                                     },
                                 },
                                 {
                                     "selector": "edge",
                                     "style": {
-                                        # The default curve style does not work with certain arrows
                                         "curve-style": "straight",
                                         "target-arrow-shape": "triangle",
                                     },
@@ -85,6 +87,7 @@ app.layout = html.Div(
     State("slider-depth", "value"),
     running=[(Output("button-submit-state", "disabled"), True, False)],
 )
+# TODO put picture on person
 def add_person(n_clicks, person_name, depth):
     if n_clicks is None:
         raise PreventUpdate

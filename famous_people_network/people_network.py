@@ -62,14 +62,14 @@ class PeopleNetwork:
         return True
 
     def to_ctyoscape(self):
-        label_fix = nx.relabel_nodes(
-            self.graph, lambda x: x.encode("ascii", errors="ignore").decode()
-        )
-        pos = nx.nx_pydot.graphviz_layout(label_fix, prog="sfdp")
-        cytoscape_json = nx.cytoscape_data(label_fix)
+        label_fix = nx.relabel_nodes(self.graph, lambda x: hash(x) % 2**sys.hash_info.width)
+
+        positions = nx.nx_pydot.graphviz_layout(label_fix, prog="sfdp")
+        cytoscape_json = nx.cytoscape_data(self.graph)
         for node in cytoscape_json["elements"]["nodes"]:
             name = node["data"]["name"]
-            node["position"] = {"x": pos[name][0] * 3, "y": pos[name][1] * 3}
+            pos = positions[hash(name) % 2**sys.hash_info.width]
+            node["position"] = {"x": pos[0] * 3, "y": pos[1] * 3}
 
         return cytoscape_json
 
