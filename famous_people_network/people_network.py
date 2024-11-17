@@ -17,8 +17,10 @@ class PeopleNetwork:
         self.graph = nx.DiGraph()
 
     def add_person(self, title, depth=0):
-        if not self.wiki.extract_people(title):
+        pages = self.wiki.extract_people(title)
+        if not pages:
             return False
+        title = pages[0]
         self.graph.add_node(title)
         self.wiki.update_portraits(title)
         self.get_page(title).user_added = True

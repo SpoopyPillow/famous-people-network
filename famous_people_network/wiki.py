@@ -32,12 +32,8 @@ class Wiki:
         if not isinstance(titles, list):
             titles = [titles]
 
-        self.extract_pages(titles)
-        people = [title for title in titles if title in self.people_pages]
-
-        for title in titles:
-            if title in self.people_pages:
-                people.append(title)
+        pages = self.extract_pages(titles)
+        people = [title for title in pages if pages[title].is_person()]
 
         return people
 
@@ -59,7 +55,7 @@ class Wiki:
 
         sidebars = self._extract_sidebars(titles)
         summaries = self._extract_summaries(titles)
-        for title in titles:
+        for title in set([*sidebars, *summaries]):
             sidebar = sidebars[title] if title in sidebars else ""
             summary = summaries[title] if title in summaries else ""
             page = Page(title=title, sidebar=sidebar, summary=summary)

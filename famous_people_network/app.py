@@ -38,8 +38,8 @@ app.layout = html.Div(
                             ]
                         ),
                         html.Button(id="button-submit", disabled=False, children="Submit"),
-                        html.Div(id="graph-info"),
-                        html.Div([html.Button(id="button-reset", children="Reset")]),
+                        html.Pre(id="graph-info"),
+                        html.Button(id="button-reset", children="Reset"),
                     ],
                 ),
                 PanelResizeHandle(
@@ -68,10 +68,7 @@ app.layout = html.Div(
                                 },
                                 {
                                     "selector": "edge",
-                                    "style": {
-                                        "curve-style": "straight",
-                                        "target-arrow-shape": "triangle",
-                                    },
+                                    "style": {},
                                 },
                             ],
                         ),
@@ -130,14 +127,23 @@ def update_graph(clicked, person_name, depth):
     Input("people-network", "selectedEdgeData"),
 )
 def display_node_page(selected_nodes, selected_edges):
-    if selected_nodes and selected_edges:
-        return "node and edge"
-    elif selected_nodes:
+    if selected_nodes:
         node = selected_nodes[-1]
         title = node["name"]
         return people_network.get_page(title).summary
     elif selected_edges:
-        return "edge"
+        edge = selected_edges[-1]
+        source = people_network.get_page(edge["source"])
+        target = people_network.get_page(edge["target"])
+        source_to_target = source.extract_sidebar_link_info(target)
+        target_to_source = target.extract_sidebar_link_info(source)
+
+        output = ""
+        if source_to_target:
+            output += source.title + " " + ", ".join(source_to_target) + " --> " + target.title + "\n"
+        if target_to_source:
+            output += target.title + " " + ", ".join(target_to_source) + " --> " + source.title + "\n"
+        return output
 
 
 if __name__ == "__main__":

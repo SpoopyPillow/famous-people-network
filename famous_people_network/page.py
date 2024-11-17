@@ -17,11 +17,22 @@ class Page:
         return self.title.__hash__()
 
     def extract_sidebar_links(self):
-        return list(set(re.findall(r"\[\[.*?(.*?)[\|\]]", self.sidebar)))
+        lines = re.split(r"\n\s*\|\s*", self.sidebar)[1:-1]
+        output = set()
+        for line in lines:
+            output.update(re.findall(r".*?\[\[(.*?)[\|\]]", line))
+
+        return list(output)
 
     def extract_sidebar_link_info(self, link):
-        return re.findall(r"\n\s*\|\s*(.*?)\s*=.*?\[\[" + link + r"\]\]", self.sidebar)
+        if isinstance(link, Page):
+            link = link.title
+        lines = re.split(r"\n\s*\|\s*", self.sidebar)[1:-1]
+        infos = []
+        for line in lines:
+            infos.extend(re.findall(r"(.*?)\s*=.*?\[\[" + link + r"[\|\]]", line))
+        return infos
 
     def is_person(self):
         # TODO More checks for person
-        return re.search(r"\| birth_date", self.sidebar) is not None
+        return re.search(r"\n\s*\|\s*birth_date", self.sidebar) is not None
