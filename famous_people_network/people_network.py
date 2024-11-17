@@ -17,6 +17,8 @@ class PeopleNetwork:
         if not self.wiki.extract_people(title):
             return False
         self.graph.add_node(title)
+        self.wiki.update_portraits(title)
+        self.get_page(title).user_added = True
 
         is_connected = set()
         people = [title]
@@ -69,7 +71,12 @@ class PeopleNetwork:
         for node in cytoscape_json["elements"]["nodes"]:
             name = node["data"]["name"]
             pos = positions[hash(name) % 2**sys.hash_info.width]
+            page = self.get_page(name)
             node["position"] = {"x": pos[0] * 3, "y": pos[1] * 3}
+
+            if page.image is not None:
+                node["data"]["url"] = page.image
+            node["data"]["size"] = 120 if page.user_added else 30
 
         return cytoscape_json
 

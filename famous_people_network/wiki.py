@@ -150,6 +150,28 @@ class Wiki:
 
         return summaries
 
+    def update_portraits(self, titles):
+        if not isinstance(titles, list):
+            titles = [titles]
+        session = requests.Session()
+        step = 50
+
+        for i in range(0, len(titles), step):
+            params = {
+                "action": "query",
+                "prop": "pageimages",
+                "format": "json",
+                "pithumbsize": 500,
+                "titles": "|".join(titles[i : i + step]),
+            }
+            data = session.get(self.url, params=params).json()
+            pages = data["query"]["pages"]
+
+            for page in pages.values():
+                if "thumbnail" in page:
+                    title = page["title"]
+                    self.people_pages[title].image = page["thumbnail"]["source"]
+
     def _extract_links(self, title):
         session = requests.Session()
         params = {

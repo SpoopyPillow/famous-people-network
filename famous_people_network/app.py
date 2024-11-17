@@ -58,7 +58,11 @@ app.layout = html.Div(
                                     "style": {
                                         "label": "data(name)",
                                         "color": "white",
-                                        "background-color": "white"
+                                        "width": "data(size)",
+                                        "height": "data(size)",
+                                        "background-fit": "cover",
+                                        "background-image": "data(url)",
+                                        "background-color": "white",
                                     },
                                 },
                                 {
@@ -74,7 +78,8 @@ app.layout = html.Div(
                 ),
             ],
             direction="horizontal",
-        )
+        ),
+        html.Div([html.Button(id="button-reset")]),
     ],
     style={"height": "100vh"},
 )
@@ -87,7 +92,6 @@ app.layout = html.Div(
     State("slider-depth", "value"),
     running=[(Output("button-submit-state", "disabled"), True, False)],
 )
-# TODO put picture on person
 def add_person(n_clicks, person_name, depth):
     if n_clicks is None:
         raise PreventUpdate

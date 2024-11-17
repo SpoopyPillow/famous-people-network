@@ -10,6 +10,8 @@ class Page:
         self.title = title
         self.sidebar = sidebar
         self.summary = summary
+        self.image = None
+        self.user_added = False
 
     def __hash__(self):
         return self.title.__hash__()
