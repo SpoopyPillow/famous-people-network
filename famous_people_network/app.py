@@ -27,15 +27,67 @@ app.layout = html.Div(
                         html.Pre(html.H1("Famous People Network")),
                         html.Div(
                             [
-                                html.Pre(html.P("Person Name: ")),
-                                dcc.Input(id="input-person", value="", type="text"),
-                            ]
+                                html.Div(
+                                    [
+                                        dcc.Dropdown(
+                                            [
+                                                {
+                                                    "label": html.Pre(
+                                                        ["Add Person"],
+                                                    ),
+                                                    "value": "Add Person",
+                                                },
+                                                {
+                                                    "label": html.Pre(
+                                                        ["Remove Person"],
+                                                    ),
+                                                    "value": "Remove Person",
+                                                },
+                                            ],
+                                            "Add Person",
+                                            multi=False,
+                                            clearable=False,
+                                            style={"width": "100%", "text-align": "center"},
+                                        ),
+                                    ],
+                                    style={"flex": 1},
+                                ),
+                                html.Div(
+                                    html.Pre(
+                                        html.P("Depth: "),
+                                    ),
+                                    style={
+                                        "flex": 2,
+                                        "padding": "10px",
+                                        "text-align": "center"
+                                    },
+                                ),
+                            ],
+                            style={"display": "flex", "flexDirection": "row"},
                         ),
                         html.Div(
                             [
-                                html.Pre(html.P("Depth: ")),
-                                dcc.Slider(id="slider-depth", min=0, max=5, step=1, value=0),
-                            ]
+                                html.Div(
+                                    dcc.Input(
+                                        id="input-person",
+                                        value="",
+                                        type="text",
+                                        style={"width": "100%"},
+                                    ),
+                                    style={"flex": 1},
+                                ),
+                                html.Div(
+                                    dcc.Slider(
+                                        id="slider-depth",
+                                        min=1,
+                                        max=5,
+                                        step=1,
+                                        value=1,
+                                    ),
+                                    style={"flex": 2},
+                                ),
+                            ],
+                            style={"display": "flex", "flexDirection": "row"},
                         ),
                         html.Button(id="button-submit", disabled=False, children="Submit"),
                         html.Div(
@@ -124,7 +176,7 @@ def update_graph(clicked, person_name, depth):
     if clicked == "reset":
         people_network.reset_graph()
     elif clicked == "submit":
-        people_network.add_person(person_name, depth)
+        people_network.add_person(person_name, depth-1)
 
     return people_network.to_ctyoscape()["elements"]
 

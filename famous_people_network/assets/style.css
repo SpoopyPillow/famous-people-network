@@ -4,3 +4,20 @@ body {
     background-color: #1d1d1d;
     color: #f0f0f0;
 }
+
+.Select-control {
+    background-color: #1d1d1d !important;
+    color: white;
+    border-width: 0;
+    padding: 10px 0;
+}
+
+.Select-menu-outer {
+    background-color: #1d1d1d;
+    color: white;
+    border-width: 0;
+}
+
+.Select-value-label {
+    color: white !important;
+}
