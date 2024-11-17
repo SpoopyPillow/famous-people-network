@@ -47,7 +47,10 @@ app.layout = html.Div(
                                             "Add Person",
                                             multi=False,
                                             clearable=False,
-                                            style={"width": "100%", "text-align": "center"},
+                                            style={
+                                                "width": "100%",
+                                                "text-align": "center",
+                                            },
                                         ),
                                     ],
                                     style={"flex": 1},
@@ -56,11 +59,7 @@ app.layout = html.Div(
                                     html.Pre(
                                         html.P("Depth: "),
                                     ),
-                                    style={
-                                        "flex": 2,
-                                        "padding": "10px",
-                                        "text-align": "center"
-                                    },
+                                    style={"flex": 2, "padding": "10px", "text-align": "center"},
                                 ),
                             ],
                             style={"display": "flex", "flexDirection": "row"},
@@ -70,9 +69,10 @@ app.layout = html.Div(
                                 html.Div(
                                     dcc.Input(
                                         id="input-person",
+                                        className="input-default",
                                         value="",
                                         type="text",
-                                        style={"width": "100%"},
+                                        style={"width": "100%", "padding": "5px"},
                                     ),
                                     style={"flex": 1},
                                 ),
@@ -84,22 +84,39 @@ app.layout = html.Div(
                                         step=1,
                                         value=1,
                                     ),
-                                    style={"flex": 2},
+                                    style={"flex": 2, "padding": "0 0 0 5%"},
                                 ),
                             ],
                             style={"display": "flex", "flexDirection": "row"},
                         ),
-                        html.Button(id="button-submit", disabled=False, children="Submit"),
+                        html.Div(
+                            html.Button(
+                                id="button-submit",
+                                className="button-default",
+                                disabled=False,
+                                children="Submit",
+                                style={"margin": "0 auto", "height": "5vh", "width": "100vw"},
+                            ),
+                            style={"padding": "20px 0 0 0", "display": "flex"},
+                        ),
                         html.Div(
                             id="graph-info",
                             style={
                                 "height": "50vh",
                                 "margin": "5vh auto",
-                                "padding": " 0 20px 20px 20px",
+                                "padding": "0 10px 0px 10px",
                                 "border": "1px white solid",
                             },
                         ),
-                        html.Button(id="button-reset", children="Reset"),
+                        html.Div(
+                            html.Button(
+                                id="button-reset",
+                                className="button-default",
+                                children="Reset",
+                                style={"margin": "0 auto", "height": "5vh", "width": "100vw"},
+                            ),
+                            style={"display": "flex"},
+                        ),
                     ],
                 ),
                 PanelResizeHandle(
@@ -176,7 +193,7 @@ def update_graph(clicked, person_name, depth):
     if clicked == "reset":
         people_network.reset_graph()
     elif clicked == "submit":
-        people_network.add_person(person_name, depth-1)
+        people_network.add_person(person_name, depth - 1)
 
     return people_network.to_ctyoscape()["elements"]
 

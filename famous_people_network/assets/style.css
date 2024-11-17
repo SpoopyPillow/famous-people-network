@@ -7,17 +7,35 @@ body {
 
 .Select-control {
     background-color: #1d1d1d !important;
-    color: white;
+    color: #f0f0f0;
     border-width: 0;
     padding: 10px 0;
 }
 
 .Select-menu-outer {
     background-color: #1d1d1d;
-    color: white;
+    color: #f0f0f0;
     border-width: 0;
 }
 
 .Select-value-label {
-    color: white !important;
+    color: #f0f0f0 !important;
+}
+
+.input-default {
+    color: #f0f0f0;
+    background-color: #393939;
+    border-width: 0px;
+}
+
+.input-default .disabled {
+    color: #ff0000;
+    background-color: #ff0000;
+    border-width: 0px;
+}
+
+.button-default {
+    color: #f0f0f0;
+    background-color: #393939;
+    border-width: 0px;
 }
