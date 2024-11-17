@@ -30,7 +30,8 @@ app.layout = html.Div(
                                 html.Div(
                                     [
                                         dcc.Dropdown(
-                                            [
+                                            id="dropdown-operation",
+                                            options=[
                                                 {
                                                     "label": html.Pre(
                                                         ["Add Person"],
@@ -44,7 +45,7 @@ app.layout = html.Div(
                                                     "value": "Remove Person",
                                                 },
                                             ],
-                                            "Add Person",
+                                            value="Add Person",
                                             multi=False,
                                             clearable=False,
                                             style={
@@ -185,15 +186,19 @@ def button_action(reset, submit, previous):
     Input("button-clicked", "data"),
     State("input-person", "value"),
     State("slider-depth", "value"),
+    State("dropdown-operation", "value"),
     running=[(Output("button-submit", "disabled"), True, False)],
 )
-def update_graph(clicked, person_name, depth):
+def update_graph(clicked, person_name, depth, operation):
     if clicked is None:
         raise PreventUpdate
     if clicked == "reset":
         people_network.reset_graph()
     elif clicked == "submit":
-        people_network.add_person(person_name, depth - 1)
+        if operation == "Add Person":
+            people_network.add_person(person_name, depth - 1)
+        elif operation == "Remove Person":
+            people_network.remove_person(person_name, depth - 1)
 
     return people_network.to_ctyoscape()["elements"]
 

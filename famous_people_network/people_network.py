@@ -43,6 +43,17 @@ class PeopleNetwork:
                         neighbor,
                         labels=json.dumps(page.extract_sidebar_link_info(neighbor)),
                     )
+                    
+                    neighbor_page = self.get_page(neighbor)
+                    for neighbor_link in neighbor_page.extract_sidebar_links():
+                        if self.graph.has_node(neighbor_link):
+                            self.graph.add_edge(
+                                neighbor,
+                                neighbor_link,
+                                labels=json.dumps(
+                                    neighbor_page.extract_sidebar_link_info(neighbor_link)
+                                ),
+                            )
 
                 people.extend(people_neighbors)
                 is_connected.add(person)
@@ -50,7 +61,7 @@ class PeopleNetwork:
         return True
 
     def remove_person(self, title, depth=0):
-        if not self.graph.has_node(person):
+        if not self.graph.has_node(title):
             return False
         people = self.graph.neighbors(title)
         self.graph.remove_node(title)
@@ -87,5 +98,7 @@ class PeopleNetwork:
 
     def get_page(self, title):
         return self.wiki.people_pages[title]
+
+
 net = PeopleNetwork()
 net.add_person("Aristoxenus", 1)
