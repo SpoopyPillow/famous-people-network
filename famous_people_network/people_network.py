@@ -13,6 +13,9 @@ class PeopleNetwork:
         self.graph = nx.DiGraph()
         self.wiki = Wiki()
 
+    def reset_graph(self):
+        self.graph = nx.DiGraph()
+
     def add_person(self, title, depth=0):
         if not self.wiki.extract_people(title):
             return False

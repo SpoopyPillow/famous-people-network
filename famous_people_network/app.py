@@ -14,9 +14,9 @@ app = Dash(__name__)
 
 people_network = PeopleNetwork()
 
-# TODO refresh button
 app.layout = html.Div(
     [
+        html.Div(id="none", children=None),
         PanelGroup(
             id="panel-group",
             children=[
@@ -37,8 +37,9 @@ app.layout = html.Div(
                                 dcc.Slider(id="slider-depth", min=0, max=5, step=1, value=0),
                             ]
                         ),
-                        html.Button(id="button-submit-state", disabled=False, children="Submit"),
+                        html.Button(id="button-submit", disabled=False, children="Submit"),
                         html.Div(id="graph-info"),
+                        html.Div([html.Button(id="button-reset", children="Reset")]),
                     ],
                 ),
                 PanelResizeHandle(
@@ -79,23 +80,47 @@ app.layout = html.Div(
             ],
             direction="horizontal",
         ),
-        html.Div([html.Button(id="button-reset")]),
+        dcc.Store(id="button-previous", data={"reset": 0, "submit": 0}),
+        dcc.Store(id="button-clicked"),
     ],
     style={"height": "100vh"},
 )
 
 
 @callback(
+    Output("button-clicked", "data"),
+    Output("button-previous", "data"),
+    Input("button-reset", "n_clicks"),
+    Input("button-submit", "n_clicks"),
+    State("button-previous", "data"),
+)
+def button_action(reset, submit, previous):
+    clicked = None
+    if reset is not None and reset != previous["reset"]:
+        previous["reset"] += 1
+        clicked = "reset"
+    if submit is not None and submit != previous["submit"]:
+        previous["submit"] += 1
+        clicked = "submit"
+
+    return clicked, previous
+
+
+@callback(
     Output("people-network", "elements"),
-    Input("button-submit-state", "n_clicks"),
+    Input("button-clicked", "data"),
     State("input-person", "value"),
     State("slider-depth", "value"),
-    running=[(Output("button-submit-state", "disabled"), True, False)],
+    running=[(Output("button-submit", "disabled"), True, False)],
 )
-def add_person(n_clicks, person_name, depth):
-    if n_clicks is None:
+def update_graph(clicked, person_name, depth):
+    if clicked is None:
         raise PreventUpdate
-    people_network.add_person(person_name, depth)
+    if clicked == "reset":
+        people_network.reset_graph()
+    elif clicked == "submit":
+        people_network.add_person(person_name, depth)
+
     return people_network.to_ctyoscape()["elements"]
 
 
