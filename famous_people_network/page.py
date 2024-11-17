@@ -35,4 +35,7 @@ class Page:
 
     def is_person(self):
         # TODO More checks for person
-        return re.search(r"\n\s*\|\s*birth_date", self.sidebar) is not None
+        return (
+            re.search(r"\n\s*\|\s*birth_date", self.sidebar) is not None
+            or re.search(r"\(.*?born.*?\)", self.summary) is not None
+        )

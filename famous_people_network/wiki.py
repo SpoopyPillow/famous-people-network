@@ -119,7 +119,7 @@ class Wiki:
                 "prop": "extracts",
                 "format": "json",
                 "exintro": 0,
-                "exsentences": 2,
+                "exsentences": 5,
                 "explaintext": 0,
                 "redirects": 1,
                 "titles": "|".join(titles[i : i + step]),

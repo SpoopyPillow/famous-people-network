@@ -87,3 +87,5 @@ class PeopleNetwork:
 
     def get_page(self, title):
         return self.wiki.people_pages[title]
+net = PeopleNetwork()
+net.add_person("Aristoxenus", 1)

@@ -24,21 +24,29 @@ app.layout = html.Div(
                     id="panel-1",
                     style={"padding": 10, "margin": 10},
                     children=[
-                        html.H1("Famous People Network"),
+                        html.Pre(html.H1("Famous People Network")),
                         html.Div(
                             [
-                                html.P("Person Name: "),
+                                html.Pre(html.P("Person Name: ")),
                                 dcc.Input(id="input-person", value="", type="text"),
                             ]
                         ),
                         html.Div(
                             [
-                                html.P("Depth: "),
+                                html.Pre(html.P("Depth: ")),
                                 dcc.Slider(id="slider-depth", min=0, max=5, step=1, value=0),
                             ]
                         ),
                         html.Button(id="button-submit", disabled=False, children="Submit"),
-                        html.Pre(id="graph-info"),
+                        html.Div(
+                            id="graph-info",
+                            style={
+                                "height": "50vh",
+                                "margin": "5vh auto",
+                                "padding": " 0 20px 20px 20px",
+                                "border": "1px white solid",
+                            },
+                        ),
                         html.Button(id="button-reset", children="Reset"),
                     ],
                 ),
@@ -127,10 +135,15 @@ def update_graph(clicked, person_name, depth):
     Input("people-network", "selectedEdgeData"),
 )
 def display_node_page(selected_nodes, selected_edges):
+    output = []
+
     if selected_nodes:
         node = selected_nodes[-1]
         title = node["name"]
-        return people_network.get_page(title).summary
+        summary = people_network.get_page(title).summary
+        output.append(html.H3(title))
+        output.append(html.P(summary))
+
     elif selected_edges:
         edge = selected_edges[-1]
         source = people_network.get_page(edge["source"])
@@ -138,12 +151,17 @@ def display_node_page(selected_nodes, selected_edges):
         source_to_target = source.extract_sidebar_link_info(target)
         target_to_source = target.extract_sidebar_link_info(source)
 
-        output = ""
+        output.append(html.H3("Connection"))
         if source_to_target:
-            output += source.title + " " + ", ".join(source_to_target) + " --> " + target.title + "\n"
+            output.append(
+                html.P(source.title + " (" + ", ".join(source_to_target) + "): " + target.title)
+            )
         if target_to_source:
-            output += target.title + " " + ", ".join(target_to_source) + " --> " + source.title + "\n"
-        return output
+            output.append(
+                html.P(target.title + " (" + ", ".join(target_to_source) + "): " + source.title)
+            )
+
+    return output
 
 
 if __name__ == "__main__":
