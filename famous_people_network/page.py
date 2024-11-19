@@ -37,5 +37,5 @@ class Page:
         # TODO More checks for person
         return (
             re.search(r"\n\s*\|\s*birth_date", self.sidebar) is not None
-            or re.search(r"^\.*?\(.*?born.*?\).*?\.", self.summary) is not None
+            or re.search(r"\(.*?born.*?\).*?", self.summary) is not None
         )

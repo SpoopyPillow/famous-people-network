@@ -85,6 +85,8 @@ class Wiki:
                 "titles": "|".join(titles[i : i + step]),
             }
             data = session.get(self.url, params=params).json()
+            if "query" not in data:
+                return {}
             pages = data["query"]["pages"]
 
             for page in pages.values():
@@ -125,6 +127,8 @@ class Wiki:
                 "titles": "|".join(titles[i : i + step]),
             }
             data = session.get(self.url, params=params).json()
+            if "query" not in data:
+                return {}
             pages = data["query"]["pages"]
 
             for page in pages.values():
@@ -161,6 +165,8 @@ class Wiki:
                 "titles": "|".join(titles[i : i + step]),
             }
             data = session.get(self.url, params=params).json()
+            if "query" not in data:
+                return
             pages = data["query"]["pages"]
 
             for page in pages.values():

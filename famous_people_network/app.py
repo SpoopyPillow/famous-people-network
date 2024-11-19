@@ -106,7 +106,9 @@ app.layout = html.Div(
                                 "height": "50vh",
                                 "margin": "5vh auto",
                                 "padding": "0 10px 0px 10px",
-                                "border": "1px white solid",
+                                "border": "2px #808080 solid",
+                                "background-color": "#202020",
+                                "color": "#f0f0f0"
                             },
                         ),
                         html.Div(
@@ -121,11 +123,11 @@ app.layout = html.Div(
                     ],
                 ),
                 PanelResizeHandle(
-                    html.Div(style={"backgroundColor": "grey", "height": "100%", "width": "5px"})
+                    html.Div(style={"backgroundColor": "#404040", "height": "100%", "width": "5px"})
                 ),
                 Panel(
                     id="panel-2",
-                    style={"padding": 10, "margin": 10},
+                    style={"padding": 20, "background-color": "#151515"},
                     children=[
                         cyto.Cytoscape(
                             id="people-network",
@@ -148,7 +150,7 @@ app.layout = html.Div(
                                 },
                                 {
                                     "selector": "edge",
-                                    "style": {"opacity": 0.2},
+                                    "style": {"opacity": 0.3},
                                 },
                             ],
                         ),
