@@ -5,6 +5,10 @@ body {
     color: #f0f0f0;
 }
 
+.container {
+    overflow: auto;
+}
+
 .Select-control {
     background-color: #1d1d1d !important;
     color: #f0f0f0;
@@ -34,8 +38,24 @@ body {
     border-width: 0px;
 }
 
-.button-default {
-    color: #f0f0f0;
-    background-color: #393939;
-    border-width: 0px;
+button {
+    border: 0px;
+    background-color: #00536e;
+    color: #ffffff;
+    padding: 5px 10px;
+}
+
+
+button:hover {
+    border: 0px;
+    background-color: #00aacc;
+    color: #ffffff;
+    padding: 5px 10px;
+}
+
+button:disabled,
+button[disabled] {
+    border: 0px;
+    background-color: #111111;
+    color: #b1b1b1;
 }

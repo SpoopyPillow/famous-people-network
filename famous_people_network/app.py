@@ -102,13 +102,14 @@ app.layout = html.Div(
                         ),
                         html.Div(
                             id="graph-info",
+                            className="container",
                             style={
                                 "height": "50vh",
                                 "margin": "5vh auto",
                                 "padding": "0 10px 0px 10px",
                                 "border": "2px #808080 solid",
                                 "background-color": "#202020",
-                                "color": "#f0f0f0"
+                                "color": "#f0f0f0",
                             },
                         ),
                         html.Div(
@@ -191,7 +192,10 @@ def button_action(reset, submit, previous):
     State("input-person", "value"),
     State("slider-depth", "value"),
     State("dropdown-operation", "value"),
-    running=[(Output("button-submit", "disabled"), True, False)],
+    running=[
+        (Output("button-submit", "disabled"), True, False),
+        (Output("button-reset", "disabled"), True, False),
+    ],
 )
 def update_graph(clicked, person_name, depth, operation):
     if clicked is None:
