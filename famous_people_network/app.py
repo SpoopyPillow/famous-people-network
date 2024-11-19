@@ -141,7 +141,7 @@ app.layout = html.Div(
                                         "height": "data(size)",
                                         "background-fit": "cover",
                                         "background-image": "data(url)",
-                                        "background-color": "white",
+                                        "background-color": "data(color)",
                                     },
                                 },
                                 {
@@ -200,7 +200,7 @@ def update_graph(clicked, person_name, depth, operation):
         elif operation == "Remove Person":
             people_network.remove_person(person_name, depth - 1)
 
-    return people_network.to_ctyoscape()["elements"]
+    return people_network.to_ctyoscape_cluster()
 
 
 @callback(

@@ -2,6 +2,7 @@ import sys
 import os
 import json
 import networkx as nx
+import colorsys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
@@ -43,7 +44,7 @@ class PeopleNetwork:
                         neighbor,
                         labels=json.dumps(page.extract_sidebar_link_info(neighbor)),
                     )
-                    
+
                     neighbor_page = self.get_page(neighbor)
                     for neighbor_link in neighbor_page.extract_sidebar_links():
                         if self.graph.has_node(neighbor_link):
@@ -79,11 +80,20 @@ class PeopleNetwork:
 
         return True
 
+    def cluster_communities(self):
+        return nx.community.louvain_communities(self.graph, seed=8)
+
+    def _n_colors(self, n):
+        HSV_tuples = [(x * 1.0 / n, 0.5, 0.5) for x in range(n)]
+        RGB_tuples = list(map(lambda x: [y * 255 for y in colorsys.hsv_to_rgb(*x)], HSV_tuples))
+        return RGB_tuples
+
     def to_ctyoscape(self):
         label_fix = nx.relabel_nodes(self.graph, lambda x: hash(x) % 2**sys.hash_info.width)
 
         positions = nx.nx_pydot.graphviz_layout(label_fix, prog="sfdp")
         cytoscape_json = nx.cytoscape_data(self.graph)
+
         for node in cytoscape_json["elements"]["nodes"]:
             name = node["data"]["name"]
             pos = positions[hash(name) % 2**sys.hash_info.width]
@@ -94,11 +104,23 @@ class PeopleNetwork:
                 node["data"]["url"] = page.image
             node["data"]["size"] = 120 if page.user_added else 30
 
-        return cytoscape_json
+        return cytoscape_json["elements"]
+
+    def to_ctyoscape_cluster(self):
+        cytoscape = self.to_ctyoscape()
+        nodes = cytoscape["nodes"]
+        clusters = self.cluster_communities()
+        colors = self._n_colors(len(clusters))
+        cluster_map = {}
+
+        for i, cluster in enumerate(clusters):
+            cluster_map.update(dict.fromkeys(cluster, i))
+
+        for node in nodes:
+            name = node["data"]["name"]
+            node["data"]["color"] = colors[cluster_map[name]]
+
+        return cytoscape
 
     def get_page(self, title):
         return self.wiki.people_pages[title]
-
-
-net = PeopleNetwork()
-net.add_person("Aristoxenus", 1)
